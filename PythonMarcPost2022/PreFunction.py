@@ -1,6 +1,7 @@
 #Class to store the filename, scalar item and nodelist for each working circle
 #Updates(22.05.02):
 #   1. completed the read_in_method3 (fromfile) in fuction input_fname(judgeI);
+#Updates (22.05.16) add folder 'result\' to output routine
 import Getnodeindex
 from py_post import *
 
@@ -60,7 +61,7 @@ class Inputdata(list):
         #Find the part including filename(.t16) in the list of strings(list:filenamelist)
         tempstrlist = fname.split('\\')
         tempstr = tempstrlist[len(tempstrlist)-1]
-        self.Outfname=(tempstr[0:tempstr.find(".t16")])         #-1 is deleted
+        self.Outfname='result\'+(tempstr[0:tempstr.find(".t16")])         #-1 is deleted
         self.fname=self.Outfname
         print("Postfile Imported.")
         #To test if the post-file is opened successfully or, it is either a vacant file or being opened with erros
