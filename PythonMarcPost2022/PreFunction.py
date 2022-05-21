@@ -2,6 +2,7 @@
 #Updates(22.05.02):
 #   1. completed the read_in_method3 (fromfile) in fuction input_fname(judgeI);
 #Updates (22.05.16) add folder 'result\' to output routine
+#Updates (22.05.17) rectified the problem caused by the former update 0516
 import Getnodeindex
 from py_post import *
 
@@ -61,8 +62,10 @@ class Inputdata(list):
         #Find the part including filename(.t16) in the list of strings(list:filenamelist)
         tempstrlist = fname.split('\\')
         tempstr = tempstrlist[len(tempstrlist)-1]
-        self.Outfname='result\'+(tempstr[0:tempstr.find(".t16")])         #-1 is deleted
-        self.fname=self.Outfname
+        OutDIR = "result/"
+        OutFname = (tempstr[0:tempstr.find(".t16")])  #-1 is deleted
+        self.Outfname=''.join([OutDIR, OutFname])        
+        self.fname=OutFname;    #changed due to the change in upper 3 lines
         print("Postfile Imported.")
         #To test if the post-file is opened successfully or, it is either a vacant file or being opened with erros
         try:
@@ -215,11 +218,11 @@ def define_item(_stmod, _INP0, _filenamelist, judgeI):
     
     #Show the items which can be chosen to be exported
     if _stmod == 1:
-        for x in range(0,_INP0[0].pfile.node_scalars()-1):
+        for x in range(0,_INP0[0].pfile.node_scalars()):
             print("%2d. %s" % (x,_INP0[0].pfile.node_scalar_label(x)))
         pass
     elif _stmod == 3:
-        for x in range(0, _INP0[0].pfile.element_scalars()-1):
+        for x in range(0, _INP0[0].pfile.element_scalars()):
             print("%2d. %s" % (x,_INP0[0].pfile.element_scalar_label(x)))
         pass
 
