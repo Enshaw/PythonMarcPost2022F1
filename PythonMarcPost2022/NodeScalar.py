@@ -3,11 +3,14 @@ import Printadd
 import time
 import math
 
-def Scalarfound(Inpdat, judgeI):
+def Scalarfound(Inpdat, judgeI, MaxInc = 0):
     print("===================================\n")
     print("====== <MODULE 1> GET SCALAR ======\n")
     print("===================================\n")
     
+    #Set Increments inneed
+    MaxInc = Inpdat.maxInc
+
     #global JudgeI
     judgeI = 2
 
@@ -34,8 +37,14 @@ def Scalarfound(Inpdat, judgeI):
 
 
         #get scalar
-        print("Please set the increments contained(the postfile incudes %d increments):" % (p.increments()-1), end = '')
-        inc = range(1,202)                  ###############
+        #print("Please set the increments contained(the postfile incudes %d increments):" % (p.increments()-1), end = '')
+        ################################################################################################
+        nIncrements = p.increments()
+        if MaxInc == 0 or MaxInc > nIncrements:
+            MaxInc = nIncrements-1
+            pass
+        inc = range(1,MaxInc+2)
+        ###################################################################################################
 
         scalarresult = []
         bar = Printadd.ProgressBar()

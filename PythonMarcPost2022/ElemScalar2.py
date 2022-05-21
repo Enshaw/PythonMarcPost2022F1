@@ -152,8 +152,11 @@ def getELEindex(_p, _nodelist, _nodeindex):
 
     return eleindex
 
-def EleScalar(Inpdat, judgeI):
+def EleScalar(Inpdat, judgeI, MaxInc = 0):
     #PreFunction.py is in-need for function'getnodeind'
+
+    #Set Increments inneed
+    MaxInc = Inpdat.maxInc
     #JudgeI
     print("===========================================\n")
     print("====== <MODULE 3> GET ELEMENT SCALAR ======\n")
@@ -208,7 +211,11 @@ def EleScalar(Inpdat, judgeI):
         print("Please set the increments contained(the postfile incudes %d increments):" % (p.increments()-1), end = '')
         
         ################################################################################################
-        inc = range(1,202)
+        nIncrements = p.increments()
+        if MaxInc == 0 or MaxInc > nIncrements:
+            MaxInc = nIncrements-1
+            pass
+        inc = range(1,MaxInc+2)
         ###################################################################################################
 
 

@@ -1,6 +1,7 @@
 #upgrade in 2022/5/8: getnodeind mode1 _PreviousData.Nodedata = int(x) (former: =i)
 #upgrade in 2022/5/14: getnodeind and getnodeindrepeat: mode1 node.x/y/z == cordinatelist[x][1/2/3] → abs(node.x/y/z-cordinatelist[x][1/2/3])<=1e-5
 #upgrade in 2022/5/15: getnodeind and getnodeindrepeat: mode2 for x in range(0, coordinlist) changed to coordinlist-1
+#upgrade in 2022/5/17: for k in range(0, len(nodeT))
 
 import PreFunction
 
@@ -87,8 +88,8 @@ def getnodeind(fp):
                 i = i+1
 
 
-        for x in range(0, len(Coordinlist)-1):
-            for k in range(1, nnodeT):
+        for x in range(0, len(Coordinlist)):
+            for k in range(0, nnodeT):
                 nod = fp.node(k)
                 if abs((nod.x) - Coordinlist[x][0])<=1e-5 and abs((nod.y) - Coordinlist[x][1])<=1e-5 and abs((nod.z) - Coordinlist[x][2])<=1e-5:
                     listid.append(k)
