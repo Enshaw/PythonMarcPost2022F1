@@ -5,6 +5,7 @@ import math
 import Export
 import PreFunction
 import Getnodeindex
+import Print_Function
 
 #*********get scalar from every element including this node*************
 
@@ -152,8 +153,11 @@ def getELEindex(_p, _nodelist, _nodeindex):
 
     return eleindex
 
-def EleScalar(Inpdat, judgeI):
+def EleScalar(Inpdat, judgeI, MaxInc = 0):
     #PreFunction.py is in-need for function'getnodeind'
+
+    #Set Increments inneed
+    MaxInc = Inpdat.maxInc
     #JudgeI
     print("===========================================\n")
     print("====== <MODULE 3> GET ELEMENT SCALAR ======\n")
@@ -161,159 +165,8 @@ def EleScalar(Inpdat, judgeI):
     p = Inpdat.pfile
     if judgeI == 2:
         #Semi-Auto
-        
-        #CHOOSE SCALAR
-        st1 = Inpdat.scalar
-        strid = p.element_scalar_label(st1)
-        print ("YOU CHOSE: ", strid)
-        print("----------------------------------------------------------\n")
+        EleScalar_Semi(Inpdat)
 
-        #Choose node
-        nodeindex = Inpdat.Nodelist
-
-        printlen = len(nodeindex)*12
-        if printlen <= 30:
-            printlen = 30
-        elif printlen >=80:
-            printlen = 80
-
-        for i in range(0, printlen):
-            print(".", end = '')
-        print('\n')
-        
-        
-        print("  Node id  of %s" % Inpdat.Outfname)
-        
-        for i in range(0, printlen):
-            print(".", end = '')
-        print('\n')
-        
-        nodeid = []
-        for x in nodeindex:
-            nodeid.append(p.node_id(x))
-
-        #print nodelist by nodeid
-        #print("==  ", end = '')
-        #for x in nodeid:
-        #    print("%8d" % x, end = ' ')
-        #for x in nodeid:
-        #    print("============")
-        #print("  ==\n")
-
-        #get element index by nodeid
-        eleIndex = getELEindex(p, nodeid, nodeindex)
-
-
-        #get scalar
-        print("Please set the increments contained(the postfile incudes %d increments):" % (p.increments()-1), end = '')
-        
-        ################################################################################################
-        inc = range(1,202)
-        ###################################################################################################
-
-
-        scalarresult = []
-        #nodeid2=[]
-        #for j in range(0, len(eleIndex)):
-        #    tm1=p.element_scalar(eleIndex[j][1], st1)
-        #    nodeid2[j]=tm1[eleIndex[j][2]].id
-
-
-        bar = Printadd.ProgressBar()
-        xbar = bar(range(len(inc)))
-        i=1
-        for B in bar(range(len(inc))):
-            p.moveto(i)
-            bar.update('{0}/{1} STEP {2}.'.format(bar.curr_value, bar.max_value, bar.curr_value))
-            time.sleep(0.1)
-            scalarresult.append([])
-            for j in range(0, len(eleIndex)):   #circulation for node id
-                tsum = float(0)
-                ti=[]
-                eleIndextemp=eleIndex[j]
-                for k in range(0,len(eleIndextemp.Elementindex)):
-                    temp_eleindex=eleIndextemp.Elementindex[k]
-                    temp_nodesequence=eleIndextemp.Nodesequence[k]
-                    ti.append(p.element_scalar(temp_eleindex, st1)[temp_nodesequence].value)
-                    tsum = tsum+ti[k]
-                
-                ###############
-                if len(ti)==0:
-                    print("IN %d Node, LEN TI = %d" % (eleIndex[j].Nodeid, len(ti)))
-                    #input("TEST00")
-                #############
-                taverage=tsum/len(ti)
-
-                scalarresult[i-1].append(taverage)   
-            i = i+1
-        bar.overlay_display('Work {0} is Done.'.format(1))
-
-
-
-        #get node coordinate
-        nodc=[]
-        i=0
-        for x in nodeindex:
-            nodc.append([])
-            tempnode=p.node(x)
-            nodc[i].append(tempnode.x)
-            nodc[i].append(tempnode.y)
-            nodc[i].append(tempnode.z)
-            i = i+1
-
-        #print result
-        maxscalar = max(max(scalarresult))
-        minscalar = min(min(scalarresult))
-        absmaxscalar = max(abs(maxscalar), abs(minscalar))
-        if absmaxscalar == 0:
-            e = 0
-        else:
-            e = int(-(math.log10(absmaxscalar)))
-        
-        print("\n%s\t( x1e%d)" % (strid,-e))
-        print("Node id ", end = '')
-        for x in nodeid:
-            print("%10d" % x, end = '')
-        print('\n')
-  
-
-        i = 0
-        for x in nodeindex:
-            print("%10.3f" % nodc[i][0],end = '')
-            i = i+1
-        print('\n')
-        i = 0
-        for x in nodeindex:
-            print("%10.3f" % nodc[i][1],end = '')
-            i = i+1
-        print('\n')
-        i = 0
-        for x in nodeindex:
-            print("%10.3f" % nodc[i][2],end = '')
-            i = i+1
-        print('\n')
-
-        print('\n========', end = '')
-
-        for x in nodeid:
-            print("==========", end = '')
-        print('\n')
-        for i in inc:
-            print("STEP %3d" % i, end = '')
-            for x in scalarresult[i-1]:
-                t=x*(10**e)
-                print("%10.3f" % (x*(10**e)), end = '')
-            print('\n')
-        
-        #write to file
-        outputfname = Inpdat.Outfname+'-E-'+strid
-        #outputfname.join(str(st1))
-        Export.expo2file(scalarresult, nodeid, inc, outputfname,p, strid, nodeindex)
-        
-        #if (input("Work of MODULE 1 has been done, continue another work by MODULE 1?(Y/N):") == 'Y'):
-        #    pass
-        #else:
-        #    break
 
 
         return
@@ -431,3 +284,164 @@ def EleScalar(Inpdat, judgeI):
 
     return 1
 
+
+
+def EleScalar_Semi(Inpdat):
+    #If Mode Semi-Auto is chosen, use this function
+    #Semi-Auto
+
+    #assign file arrow
+    p = Inpdat.pfile
+
+    #Set Increments inneed
+    MaxInc = Inpdat.maxInc
+        
+    #CHOOSE SCALAR
+    vectorindex = Inpdat.scalar
+    for x in vectorindex:
+        vector_label = p.element_scalar_label(x)
+    print ("YOU CHOSE: ")
+    for i in range(len(vector_label)):
+        print("%d. %s" % (i, vector_label[i]))
+
+    print("----------------------------------------------------------\n")
+
+    #Choose node
+    nodeindex = Inpdat.Nodelist
+
+    printlen = len(nodeindex)*12
+    if printlen <= 30:
+        printlen = 30
+    elif printlen >=80:
+        printlen = 80
+
+    for i in range(0, printlen):
+        print(".", end = '')
+    print('\n')
+        
+        
+    print("  Node id  of %s" % Inpdat.Outfname)
+        
+    for i in range(0, printlen):
+        print(".", end = '')
+    print('\n')
+        
+    nodeid = []
+    for x in nodeindex:
+        nodeid.append(p.node_id(x))
+
+    #get element index by nodeid
+    eleIndex = getELEindex(p, nodeid, nodeindex)
+
+
+    #get scalar     
+    ################################################################################################
+    nIncrements = p.increments()
+    if MaxInc == 0 or MaxInc > nIncrements:
+        MaxInc = nIncrements-1
+        pass
+    inc = range(1,MaxInc+2)
+    ###################################################################################################
+
+
+    #scalarresult = []
+
+    #bar = Printadd.ProgressBar()
+    #xbar = bar(range(len(inc)))
+    #i=1
+    #for B in bar(range(len(inc))):
+    #    p.moveto(i)
+    #    bar.update('{0}/{1} STEP {2}.'.format(bar.curr_value, bar.max_value, bar.curr_value))
+    #    time.sleep(0.1)
+    #    scalarresult.append([])
+    #    for j in range(0, len(eleIndex)):   #circulation for node id
+    #        tsum = float(0)
+    #        ti=[]
+    #        eleIndextemp=eleIndex[j]
+    #        for k in range(0,len(eleIndextemp.Elementindex)):
+    #            temp_eleindex=eleIndextemp.Elementindex[k]
+    #            temp_nodesequence=eleIndextemp.Nodesequence[k]
+    #            ti.append(p.element_scalar(temp_eleindex, st1)[temp_nodesequence].value)
+    #            tsum = tsum+ti[k]
+                
+    #        ###############
+    #        if len(ti)==0:
+    #            print("IN %d Node, LEN TI = %d" % (eleIndex[j].Nodeid, len(ti)))
+    #            #input("TEST00")
+    #        #############
+    #        taverage=tsum/len(ti)
+
+    #        scalarresult[i-1].append(taverage)   
+    #    i = i+1
+    #bar.overlay_display('Work {0} is Done.'.format(1))
+
+    scalarresult = get_ele_scalar(eleIndex, inc, p, vectorindex)
+
+    #get node coordinate
+    nodc = get_node_coordin(nodeindex, p)
+
+    scale = []
+    for x in nodeindex:
+        scale.append(0)
+    
+    Print_Function.Print_Result(scalarresult, nodeindex, vector_label, scale, nodc)
+        
+    #write to file
+    #outputfname = Inpdat.Outfname+'-E-'+strid
+    #outputfname.join(str(st1))
+    #Export.expo2file(scalarresult, nodeid, inc, outputfname,p, strid, nodeindex)
+    Export.write_scalar_to_txt(scalarresult, vector_label, nodc, nodeid, Inpdat.OutDIR, Inpdat.Outfname)
+        
+    #if (input("Work of MODULE 1 has been done, continue another work by MODULE 1?(Y/N):") == 'Y'):
+    #    pass
+    #else:
+    #    break
+
+    return
+
+
+def get_ele_scalar(_eleIndex, _inc, _pfile, _vectorid):
+    scalarresult = []
+
+    bar = Printadd.ProgressBar()
+    xbar = bar(range(len(_inc)))
+    i=1
+    for B in bar(range(len(_inc))):
+        p.moveto(i)
+        bar.update('{0}/{1} STEP {2}.'.format(bar.curr_value, bar.max_value, bar.curr_value))
+        time.sleep(0.1)
+        scalarresult.append([])
+        for j in range(0, len(_eleIndex)):      #circulation for node id
+            for m in range(len(_vectorid)):     #circulation for vector type
+                tsum = float(0)
+                ti=[]
+                eleIndextemp=_eleIndex[j]
+                for k in range(0,len(eleIndextemp.Elementindex)):
+                    temp_eleindex=eleIndextemp.Elementindex[k]
+                    temp_nodesequence=eleIndextemp.Nodesequence[k]
+                    ti.append(_pfile.element_scalar(temp_eleindex, _vectorid[m])[temp_nodesequence].value)
+                    tsum = tsum+ti[k]
+                
+                ###############
+                if len(ti)==0:
+                    print("IN %d Node, LEN TI = %d" % (_eleIndex[j].Nodeid, len(ti)))
+                    #input("TEST00")
+                #############
+                taverage=tsum/len(ti)
+
+                scalarresult[i-1].append(taverage)   
+        i = i+1
+    bar.overlay_display('Work {0} is Done.'.format(1))
+    return(scalarresult)
+
+def get_node_coordin(_nodeindex, _pfile):
+    nodc=[]
+    i=0
+    for x in _nodeindex:
+        nodc.append([])
+        tempnode=_pfile.node(x)
+        nodc[i].append(tempnode.x)
+        nodc[i].append(tempnode.y)
+        nodc[i].append(tempnode.z)
+        i = i+1
+    return(nodc)

@@ -5,12 +5,13 @@
     <ProjectGuid>274c696c-5172-4c23-8d1f-4bb7af7b7ab8</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>PythonMarcPost2022.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\..\..\..\..\..\..\Program Files\MSC.Software\Marc\2021.2.0\mentat2021.2\python\WIN8664\Lib</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PythonMarcPost2022</Name>
     <RootNamespace>PythonMarcPost2022</RootNamespace>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,7 +28,12 @@
     <Compile Include="NodeScalar.py" />
     <Compile Include="PreFunction.py" />
     <Compile Include="Printadd.py" />
+    <Compile Include="Print_Function.py" />
     <Compile Include="PythonMarcPost2022.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".editorconfig" />
+    <Content Include=".editorconfig.inferred" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
